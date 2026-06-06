@@ -1,0 +1,24 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user
+from app.db.session import get_db
+from app.models.usuario import Usuario
+from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.usuario import UsuarioResponse
+from app.services import auth_service
+
+router = APIRouter()
+
+
+@router.post("/login", response_model=TokenResponse)
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    user = auth_service.login(data.email, data.password, db)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales incorrectas")
+    return TokenResponse(access_token=auth_service.build_token(user), rol=user.rol)
+
+
+@router.get("/me", response_model=UsuarioResponse)
+def me(current_user: Usuario = Depends(get_current_user)):
+    return current_user
