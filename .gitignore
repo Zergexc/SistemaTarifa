@@ -1,0 +1,61 @@
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# ─── Node / React ─────────────────────────────────────────
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+*.local
+
+# ─── Variables de entorno ─────────────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+
+# ─── Base de datos ────────────────────────────────────────
+*.sqlite3
+*.db
+
+# ─── Archivos del sistema operativo ──────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDEs y editores ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Almacenamiento local (documentos y plantillas) ───────
+storage/
+
+# ─── Logs ─────────────────────────────────────────────────
+*.log
+logs/
