@@ -1,0 +1,15 @@
+export const ESTADO_BADGE = {
+  CARGADO: 'default',
+  PROCESANDO: 'warning',
+  PROCESADO: 'success',
+  ERROR_PROCESAMIENTO: 'error',
+}
+
+export const TIPO_BADGE = {
+  EXCEL: 'success',
+  PDF: 'error',
+  WORD: 'info',
+  IMAGEN: 'warning',
+}
+
+export const ROLES = ['OPERADOR', 'REVISOR', 'ADMINISTRADOR']
