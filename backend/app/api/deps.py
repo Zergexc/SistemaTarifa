@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.orm import Session
 
@@ -7,11 +7,11 @@ from app.core.security import decode_token
 from app.db.session import get_db
 from app.models.usuario import Usuario
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ) -> Usuario:
     exc = HTTPException(
@@ -19,8 +19,10 @@ def get_current_user(
         detail="No autenticado",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if credentials is None:
+        raise exc
     try:
-        payload = decode_token(token)
+        payload = decode_token(credentials.credentials)
         user_id = payload.get("sub")
         if user_id is None:
             raise exc
