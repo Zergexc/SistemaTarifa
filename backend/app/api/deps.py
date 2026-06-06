@@ -40,3 +40,9 @@ def require_admin(current_user: Usuario = Depends(get_current_user)) -> Usuario:
     if current_user.rol != "ADMINISTRADOR":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acceso restringido")
     return current_user
+
+
+def require_operador(current_user: Usuario = Depends(get_current_user)) -> Usuario:
+    if current_user.rol not in ("OPERADOR", "ADMINISTRADOR"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acceso restringido")
+    return current_user
