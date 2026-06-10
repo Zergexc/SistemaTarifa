@@ -14,14 +14,13 @@ El sistema utiliza OpenAI GPT-4.1 para transformar información heterogénea a u
 
 | Fase | Descripción | Estado |
 |---|---|---|
-| Fase 1 | Análisis y diseño | ✅ Completada |
-| Fase 2 | Base de datos y migraciones | ✅ Completada |
-| Fase 3 | Scaffold y estructura del repositorio | ✅ Completada |
-| Fase 4 | Backend — autenticación y carga de documentos | ⏳ Pendiente |
-| Fase 5 | Backend — procesamiento con IA | ⏳ Pendiente |
-| Fase 6 | Backend — generación de Excel y revisión | ⏳ Pendiente |
-| Fase 7 | Frontend React | ⏳ Pendiente |
-| Fase 8 | Pruebas y ajustes finales | ⏳ Pendiente |
+| Fase 1 | Análisis y diseño | Completada |
+| Fase 2 | Base de datos y migraciones | Completada |
+| Fase 3 | Frontend React | En curso |
+| Fase 4 | Backend — autenticación y carga de documentos | Pendiente |
+| Fase 5 | Backend — procesamiento con IA | Pendiente |
+| Fase 6 | Backend — generación de Excel y revisión | Pendiente |
+| Fase 7 | Pruebas y ajustes finales | Pendiente |
 
 ## Stack tecnológico
 
