@@ -27,13 +27,13 @@ def crear(
 
 
 @router.patch("/{id}", response_model=UsuarioResponse)
-def actualizar_estado(
+def actualizar(
     id: int,
     data: UsuarioUpdate,
     current_user: Usuario = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     try:
-        return usuario_service.toggle_activo(id, data.activo, current_user.id_usuario, db)
+        return usuario_service.update(id, data, current_user.id_usuario, db)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
