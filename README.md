@@ -1,6 +1,6 @@
 # TarifaIA
 
-Sistema de transformación inteligente de tarifarios de proveedores a plantillas Excel estandarizadas, impulsado por inteligencia artificial.
+Sistema de transformación inteligente de tarifarios de proveedores a plantillas Excel estandarizadas, impulsado por inteligencia artificial
 
 ## Descripción
 
