@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,6 +64,7 @@ export default function LoginPage() {
         </div>
 
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>
       </form>

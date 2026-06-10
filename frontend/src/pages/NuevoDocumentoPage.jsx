@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
-import { ArrowLeft, CloudUpload, FileCheck } from 'lucide-react'
+import { ArrowLeft, CloudUpload, FileCheck, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -53,7 +53,7 @@ export default function NuevoDocumentoPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <div className="flex items-center gap-3">
         <Link
           to="/documentos"
@@ -78,18 +78,20 @@ export default function NuevoDocumentoPage() {
         <CardContent className="space-y-4">
           <div
             {...getRootProps()}
-            className={`flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-12 cursor-pointer transition-colors ${
+            className={`flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed px-6 py-14 cursor-pointer transition-colors ${
               isDragActive
                 ? 'border-blue-500 bg-blue-50'
                 : file
                 ? 'border-green-400 bg-green-50'
-                : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+                : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/40'
             }`}
           >
             <input {...getInputProps()} />
             {file ? (
               <>
-                <FileCheck className="h-10 w-10 text-green-500" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+                  <FileCheck className="h-7 w-7 text-green-600" />
+                </div>
                 <div className="text-center">
                   <p className="font-medium text-gray-800">{file.name}</p>
                   <p className="text-sm text-gray-500">{formatBytes(file.size)}</p>
@@ -98,16 +100,33 @@ export default function NuevoDocumentoPage() {
               </>
             ) : (
               <>
-                <CloudUpload className="h-10 w-10 text-gray-400" />
+                <div
+                  className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
+                    isDragActive ? 'bg-blue-100' : 'bg-gray-100'
+                  }`}
+                >
+                  <CloudUpload
+                    className={`h-7 w-7 transition-colors ${
+                      isDragActive ? 'text-blue-600' : 'text-gray-400'
+                    }`}
+                  />
+                </div>
                 <div className="text-center">
                   <p className="font-medium text-gray-700">
                     {isDragActive ? 'Suelta el archivo aquí' : 'Arrastra y suelta tu archivo aquí'}
                   </p>
                   <p className="text-sm text-gray-400 mt-1">o haz clic para seleccionarlo</p>
                 </div>
-                <p className="text-xs text-gray-400">
-                  Formatos aceptados: .xlsx · .xls · .pdf · .docx · .jpg · .png
-                </p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {['.xlsx', '.xls', '.pdf', '.docx', '.jpg', '.png'].map((ext) => (
+                    <span
+                      key={ext}
+                      className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500"
+                    >
+                      {ext}
+                    </span>
+                  ))}
+                </div>
               </>
             )}
           </div>
@@ -135,6 +154,7 @@ export default function NuevoDocumentoPage() {
             className="w-full"
             size="lg"
           >
+            {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
             {uploading ? 'Registrando documento...' : 'Registrar documento'}
           </Button>
         </CardContent>
