@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AlertCircle, CheckCircle, Clock, FileText, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { StatsCard } from '@/components/StatsCard'
+import { StatsCardSkeleton, TableSkeleton } from '@/components/Skeletons'
 import { ESTADO_BADGE, TIPO_BADGE } from '@/lib/constants'
 import { formatBytes, formatDate } from '@/lib/utils'
 import api from '@/services/api'
@@ -13,6 +14,7 @@ import api from '@/services/api'
 export default function DashboardPage() {
   const [docs, setDocs] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     api.get('/api/documentos')
@@ -43,10 +45,21 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatsCard label="Total documentos" value={total} icon={FileText} />
-        <StatsCard label="Pendientes" value={cargados} icon={Clock} />
-        <StatsCard label="Procesados" value={procesados} icon={CheckCircle} />
-        <StatsCard label="Con errores" value={errores} icon={AlertCircle} />
+        {loading ? (
+          <>
+            <StatsCardSkeleton />
+            <StatsCardSkeleton />
+            <StatsCardSkeleton />
+            <StatsCardSkeleton />
+          </>
+        ) : (
+          <>
+            <StatsCard label="Total documentos" value={total} icon={FileText} />
+            <StatsCard label="Pendientes" value={cargados} icon={Clock} />
+            <StatsCard label="Procesados" value={procesados} icon={CheckCircle} />
+            <StatsCard label="Con errores" value={errores} icon={AlertCircle} />
+          </>
+        )}
       </div>
 
       {/* Recent */}
@@ -61,7 +74,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <p className="text-sm text-gray-400 p-6">Cargando...</p>
+            <TableSkeleton columns={5} rows={5} />
           ) : docs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center px-6">
               <p className="text-gray-500 text-sm">No hay documentos registrados aún.</p>
@@ -88,7 +101,7 @@ export default function DashboardPage() {
                   <TableRow
                     key={doc.id_documento}
                     className="cursor-pointer"
-                    onClick={() => (window.location.href = `/documentos/${doc.id_documento}`)}
+                    onClick={() => navigate(`/documentos/${doc.id_documento}`)}
                   >
                     <TableCell className="font-medium">
                       <Link

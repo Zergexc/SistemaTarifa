@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AlertCircle, CheckCircle, Clock, FileText, Upload } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { TimelineSkeleton } from '@/components/Skeletons'
 import { ESTADO_BADGE } from '@/lib/constants'
 import { formatDate } from '@/lib/utils'
 import api from '@/services/api'
@@ -89,7 +90,7 @@ export default function HistorialPage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-sm text-gray-400 py-8 text-center">Cargando historial...</p>
+            <TimelineSkeleton items={4} />
           ) : eventos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-3">
