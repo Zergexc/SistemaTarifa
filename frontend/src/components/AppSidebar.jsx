@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  UserCog,
   Users,
   X,
 } from 'lucide-react'
@@ -85,7 +86,21 @@ export function AppSidebar({ collapsed, onToggle }) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border p-2 shrink-0">
+      <div className="border-t border-sidebar-border p-2 shrink-0 space-y-0.5">
+        <Link
+          to="/perfil"
+          title={collapsed ? 'Mi perfil' : undefined}
+          className={cn(
+            'flex items-center gap-3 rounded-md px-2 py-2.5 text-sm transition-colors',
+            collapsed ? 'justify-center' : '',
+            isActive('/perfil')
+              ? 'bg-sidebar-active text-sidebar-fg-active font-medium'
+              : 'text-sidebar-fg hover:bg-sidebar-hover hover:text-sidebar-fg-active'
+          )}
+        >
+          <UserCog className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>Mi perfil</span>}
+        </Link>
         <button
           onClick={logout}
           title={collapsed ? 'Cerrar sesión' : undefined}

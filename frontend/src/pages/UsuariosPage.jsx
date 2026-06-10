@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search, UserPlus } from 'lucide-react'
+import { Pencil, Search, UserCheck, UserPlus, Users, UserX } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,20 +8,40 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { StatsCard } from '@/components/StatsCard'
+import { StatsCardSkeleton, TableSkeleton } from '@/components/Skeletons'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useAuth } from '@/contexts/AuthContext'
 import { ROLES } from '@/lib/constants'
+import { getRolLabel } from '@/lib/utils'
 import api from '@/services/api'
-import { Users } from 'lucide-react'
 
 const EMPTY_FORM = { nombre: '', apellido: '', email: '', password: '', rol: 'OPERADOR' }
 
+function RolSelect({ value, onChange }) {
+  return (
+    <select
+      className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={value}
+      onChange={onChange}
+    >
+      {ROLES.map((r) => (
+        <option key={r.value} value={r.value}>{r.label}</option>
+      ))}
+    </select>
+  )
+}
+
 export default function UsuariosPage() {
+  const { user: currentUser } = useAuth()
   const [usuarios, setUsuarios] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
+  const [editTarget, setEditTarget] = useState(null)
+  const [editForm, setEditForm] = useState(EMPTY_FORM)
+  const [savingEdit, setSavingEdit] = useState(false)
 
   useEffect(() => {
     fetchUsuarios()
@@ -45,9 +65,49 @@ export default function UsuariosPage() {
       fetchUsuarios()
     } catch (err) {
       const msg = err.response?.data?.detail ?? 'Error al crear el usuario'
-      toast.error(msg)
+      toast.error(typeof msg === 'string' ? msg : 'Error al crear el usuario')
     } finally {
       setSaving(false)
+    }
+  }
+
+  function openEdit(usuario) {
+    setEditForm({
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      email: usuario.email,
+      password: '',
+      rol: usuario.rol,
+    })
+    setEditTarget(usuario)
+  }
+
+  async function handleEdit(e) {
+    e.preventDefault()
+    if (editForm.password && editForm.password.length < 8) {
+      toast.error('La nueva contraseña debe tener al menos 8 caracteres')
+      return
+    }
+    setSavingEdit(true)
+    try {
+      const payload = {
+        nombre: editForm.nombre,
+        apellido: editForm.apellido,
+        email: editForm.email,
+        rol: editForm.rol,
+      }
+      if (editForm.password) payload.password = editForm.password
+      const res = await api.patch(`/api/usuarios/${editTarget.id_usuario}`, payload)
+      setUsuarios((prev) =>
+        prev.map((u) => (u.id_usuario === editTarget.id_usuario ? res.data : u))
+      )
+      toast.success('Usuario actualizado correctamente')
+      setEditTarget(null)
+    } catch (err) {
+      const msg = err.response?.data?.detail ?? 'Error al actualizar el usuario'
+      toast.error(typeof msg === 'string' ? msg : 'Error al actualizar el usuario')
+    } finally {
+      setSavingEdit(false)
     }
   }
 
@@ -62,7 +122,7 @@ export default function UsuariosPage() {
       toast.success(`Usuario ${!usuario.activo ? 'activado' : 'desactivado'}`)
     } catch (err) {
       const msg = err.response?.data?.detail ?? 'Error al actualizar el usuario'
-      toast.error(msg)
+      toast.error(typeof msg === 'string' ? msg : 'Error al actualizar el usuario')
     }
   }
 
@@ -88,9 +148,19 @@ export default function UsuariosPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatsCard label="Total usuarios" value={usuarios.length} icon={Users} />
-        <StatsCard label="Activos" value={activos} icon={Users} />
-        <StatsCard label="Inactivos" value={inactivos} icon={Users} />
+        {loading ? (
+          <>
+            <StatsCardSkeleton />
+            <StatsCardSkeleton />
+            <StatsCardSkeleton />
+          </>
+        ) : (
+          <>
+            <StatsCard label="Total usuarios" value={usuarios.length} icon={Users} />
+            <StatsCard label="Activos" value={activos} icon={UserCheck} />
+            <StatsCard label="Inactivos" value={inactivos} icon={UserX} />
+          </>
+        )}
       </div>
 
       <Card>
@@ -159,15 +229,10 @@ export default function UsuariosPage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Rol</Label>
-                    <select
-                      className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <RolSelect
                       value={form.rol}
                       onChange={(e) => setForm({ ...form, rol: e.target.value })}
-                    >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>{r}</option>
-                      ))}
-                    </select>
+                    />
                   </div>
                   <DialogFooter>
                     <Button
@@ -188,7 +253,7 @@ export default function UsuariosPage() {
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <p className="text-sm text-gray-400 p-6">Cargando usuarios...</p>
+            <TableSkeleton columns={5} rows={4} />
           ) : (
             <Table>
               <TableHeader>
@@ -201,38 +266,58 @@ export default function UsuariosPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((u) => (
-                  <TableRow key={u.id_usuario}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {u.nombre} {u.apellido}
-                        </p>
-                        <p className="text-xs text-gray-400">{u.email}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-500">#{u.id_usuario}</TableCell>
-                    <TableCell>
-                      <Badge variant={u.rol === 'ADMINISTRADOR' ? 'info' : 'default'}>
-                        {u.rol}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={u.activo ? 'success' : 'error'}>
-                        {u.activo ? 'Activo' : 'Inactivo'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant={u.activo ? 'outline' : 'success'}
-                        onClick={() => handleToggleActivo(u)}
-                      >
-                        {u.activo ? 'Desactivar' : 'Activar'}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filtered.map((u) => {
+                  const isSelf = u.id_usuario === currentUser?.id_usuario
+                  return (
+                    <TableRow key={u.id_usuario}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {u.nombre} {u.apellido}
+                            {isSelf && <span className="ml-2 text-xs text-gray-400">(tú)</span>}
+                          </p>
+                          <p className="text-xs text-gray-400">{u.email}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-500">#{u.id_usuario}</TableCell>
+                      <TableCell>
+                        <Badge variant={u.rol === 'ADMINISTRADOR' ? 'info' : 'default'}>
+                          {getRolLabel(u.rol)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={u.activo ? 'success' : 'error'}>
+                          {u.activo ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {isSelf ? (
+                          <span className="text-xs text-gray-400">
+                            Gestiona tu cuenta desde Mi perfil
+                          </span>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openEdit(u)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                              Editar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant={u.activo ? 'outline' : 'success'}
+                              onClick={() => handleToggleActivo(u)}
+                            >
+                              {u.activo ? 'Desactivar' : 'Activar'}
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
                 {filtered.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-gray-400 py-8">
@@ -245,6 +330,72 @@ export default function UsuariosPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit dialog */}
+      <Dialog open={editTarget !== null} onOpenChange={(open) => !open && setEditTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar usuario</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEdit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Nombre</Label>
+                <Input
+                  value={editForm.nombre}
+                  onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Apellido</Label>
+                <Input
+                  value={editForm.apellido}
+                  onChange={(e) => setEditForm({ ...editForm, apellido: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Correo electrónico</Label>
+              <Input
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Nueva contraseña</Label>
+              <Input
+                type="password"
+                value={editForm.password}
+                onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                placeholder="Dejar en blanco para no cambiarla"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Rol</Label>
+              <RolSelect
+                value={editForm.rol}
+                onChange={(e) => setEditForm({ ...editForm, rol: e.target.value })}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditTarget(null)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={savingEdit}>
+                {savingEdit ? 'Guardando...' : 'Guardar cambios'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

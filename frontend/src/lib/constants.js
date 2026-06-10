@@ -12,4 +12,7 @@ export const TIPO_BADGE = {
   IMAGEN: 'warning',
 }
 
-export const ROLES = ['OPERADOR', 'REVISOR', 'ADMINISTRADOR']
+export const ROLES = [
+  { value: 'OPERADOR', label: 'Operario' },
+  { value: 'ADMINISTRADOR', label: 'Administrador' },
+]

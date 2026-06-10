@@ -12,7 +12,7 @@ export function formatBytes(bytes) {
 }
 
 export function getRolLabel(rol) {
-  const labels = { OPERADOR: 'Gestor DB', ADMINISTRADOR: 'Administrador', REVISOR: 'Revisor' }
+  const labels = { OPERADOR: 'Operario', ADMINISTRADOR: 'Administrador' }
   return labels[rol] ?? rol
 }
 
