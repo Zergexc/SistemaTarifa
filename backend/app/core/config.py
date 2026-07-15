@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     STORAGE_DOCUMENTOS: str = "./storage/documentos"
     STORAGE_PLANTILLAS: str = "./storage/plantillas"
     FRONTEND_URL: str = "http://localhost:5173"
+    APP_ENV: str = "development"
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
 
     model_config = {"env_file": (".env", "../.env")}
 

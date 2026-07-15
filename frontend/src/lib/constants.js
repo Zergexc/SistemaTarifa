@@ -10,6 +10,7 @@ export const TIPO_BADGE = {
   PDF: 'error',
   WORD: 'info',
   IMAGEN: 'warning',
+  CORREO: 'info',
 }
 
 export const ROLES = [

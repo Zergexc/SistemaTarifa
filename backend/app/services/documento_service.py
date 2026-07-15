@@ -15,6 +15,7 @@ EXTENSION_TIPO = {
     ".docx": "WORD",
     ".jpg": "IMAGEN",
     ".png": "IMAGEN",
+    ".msg": "CORREO",
 }
 
 

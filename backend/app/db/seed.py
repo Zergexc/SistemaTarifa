@@ -22,11 +22,11 @@ def seed():
 
 
 def _seed_tipos_documento(db):
-    if db.query(TipoDocumento).count() > 0:
-        return
-    tipos = ["EXCEL", "PDF", "WORD", "IMAGEN"]
+    tipos = ["EXCEL", "PDF", "WORD", "IMAGEN", "CORREO"]
+    existentes = {t.descripcion for t in db.query(TipoDocumento).all()}
     for descripcion in tipos:
-        db.add(TipoDocumento(descripcion=descripcion))
+        if descripcion not in existentes:
+            db.add(TipoDocumento(descripcion=descripcion))
 
 
 def _seed_estados_documento(db):

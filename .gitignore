@@ -62,3 +62,8 @@ logs/
 
 # ─── Documentos de contexto local (nunca subir) ───────────
 HANDOFF.md
+CLAUDE_HANDOFF.md
+.claude/
+
+# ─── Pruebas (JMeter, reportes, artefactos de testing) ────
+pruebas/

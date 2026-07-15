@@ -15,6 +15,7 @@ const ACCEPT = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
   'image/jpeg': ['.jpg'],
   'image/png': ['.png'],
+  'application/vnd.ms-outlook': ['.msg'],
 }
 
 export default function NuevoDocumentoPage() {
@@ -32,7 +33,7 @@ export default function NuevoDocumentoPage() {
     accept: ACCEPT,
     maxFiles: 1,
     onDropRejected: () =>
-      toast.error('Formato no permitido. Use .xlsx, .xls, .pdf, .docx, .jpg o .png'),
+      toast.error('Formato no permitido. Use .xlsx, .xls, .pdf, .docx, .jpg, .png o .msg'),
   })
 
   async function handleUpload() {
@@ -118,7 +119,7 @@ export default function NuevoDocumentoPage() {
                   <p className="text-sm text-gray-400 mt-1">o haz clic para seleccionarlo</p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-1.5">
-                  {['.xlsx', '.xls', '.pdf', '.docx', '.jpg', '.png'].map((ext) => (
+                  {['.xlsx', '.xls', '.pdf', '.docx', '.jpg', '.png', '.msg'].map((ext) => (
                     <span
                       key={ext}
                       className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500"

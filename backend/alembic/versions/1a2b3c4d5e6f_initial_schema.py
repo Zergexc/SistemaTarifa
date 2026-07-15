@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
         sa.Column("rol", sa.String(length=50), nullable=False),
-        sa.Column("activo", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("activo", sa.Boolean(), nullable=False, server_default=sa.text("true")),
         sa.Column("fecha_registro", sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.UniqueConstraint("email"),
     )
@@ -116,7 +116,7 @@ def upgrade() -> None:
         sa.Column("valor_detectado", sa.String(length=500), nullable=True),
         sa.Column("descripcion", sa.Text(), nullable=False),
         sa.Column("severidad", sa.String(length=20), nullable=False),
-        sa.Column("resuelto", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column("resuelto", sa.Boolean(), nullable=False, server_default=sa.text("false")),
         sa.Column("resuelto_por", sa.Integer(), sa.ForeignKey("usuarios.id_usuario"), nullable=True),
         sa.Column("metodo_resolucion", sa.String(length=50), nullable=True),
         sa.Column("fecha_resolucion", sa.DateTime(), nullable=True),
